@@ -1,0 +1,37 @@
+The service exposed by this application is secured with OAuth 2. In order to consume
+it, a client will need to obtain an access token.
+
+The easiest way to obtain an access token is to exchange the user's credentials for
+a token. This can be done with the `curl` command line tool like this:
+
+  % curl localhost:8080/oauth/token -d "grant_type=password&username=walt&password=marceline&scope=read" -u myclient:secret
+  
+You should receive a JSON response containing a bearer token, such as this:
+
+  {"access_token":"84774334-52b8-4540-aef7-e830ad54bd78","token_type":"bearer","expires_in":43197,"scope":"read"}
+  
+Alternatively, you can perform the authorization code grant in a web browser by
+redirecting to http://localhost:8080/oauth/authorize?response_type=code&client_id=myclient&client_secret=secret.
+After authorizing the application, it will redirect to localhost:8000 with a code
+parameter. Exchange that parameter for an access token via curl like this:
+
+  % curl localhost:8080/oauth/token -d "grant_type=authorization_code&code=Jrfhqx" -u myclient:secret
+  
+Or you may perform implicit grant authorization by redirecting to the browser to...
+
+ http://localhost:8080/oauth/authorize?response_type=token&client_id=myclient&client_secret=secret
+
+After authorizing the application, it will redirect to localhost:8000 with the
+access token as a fragment parameter.
+
+Note that the above explanation of obtaining a token was described tersely for the
+utility of tinkering with this example app. In a real client, the entire process
+would be automated instead of using `curl` at the command line. Moreover, the choice
+of authorization flow would depend on the client needing the token. While most clients
+can use any of the choices listed above, generally OAuth 2 grant types map to clients
+like so:
+
+ * Authorization Code : Server-based web applications
+ * Implicit (Token) : JavaScript-based web clients
+ * Password : Native desktop and mobile applications
+ 
